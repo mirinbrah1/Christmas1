@@ -299,7 +299,6 @@ footer { margin: 2rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.2
 
   <footer>
     <span id="rule"></span>
-    <button type="button" class="link-btn" id="previewBtn">Gift-giver preview: unlock every door</button>
   </footer>
 
   <svg class="scene" viewBox="0 0 800 90" role="img" aria-label="A strip of snowy meadow with wildflowers and pine trees">
@@ -388,7 +387,7 @@ footer { margin: 2rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.2
   var grid = $("grid"), hint = $("hint"), overlay = $("overlay"), card = $("card");
   var current = 0, sampleFn = null, busy = false, renderedDay = "";
 
-  function isPreview() { return location.hash === "#preview"; }
+  function isPreview() { return false; }
 
   function statusLine(now) {
     if (isPreview()) return "Preview mode: every door is unlocked so you can look around.";
@@ -414,7 +413,6 @@ footer { margin: 2rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.2
       var k = now.getDate() - CONFIG.startDay + 1;
       if (k >= 1 && k <= DOORS.length) todayN = k;
     }
-    $("previewBtn").textContent = preview ? "Leave preview" : "Gift-giver preview: unlock every door";
     grid.textContent = "";
     DOORS.forEach(function (d, i) {
       var n = i + 1;
@@ -481,10 +479,6 @@ footer { margin: 2rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.2
   overlay.addEventListener("click", function (e) { if (e.target === overlay) closeCard(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCard(); });
 
-  $("previewBtn").addEventListener("click", function () {
-    location.hash = isPreview() ? "" : "preview";
-  });
-  window.addEventListener("hashchange", render);
 
   // Optional live AI surprise. Appears only when the viewer can ask Claude.
   if (window.claude && window.claude.use) {
