@@ -1,0 +1,568 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ten Doors</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600;800&display=swap">
+<style>
+/* Layout: a snowy meadow valley in soft daylight. A painted-style scenery banner (hills, pines with
+   lights, a cottage, a stream, wildflowers) opens the page, then a left-aligned title with the live
+   countdown, then 10 ribboned gift-box doors in two rows of five. Opening a door lifts a paper card
+   over the scene. One committed look: sky blue, meadow green, cranberry, gold. */
+:root {
+  --sky-top: #a9d3e6;
+  --sky-low: #e7f3ec;
+  --meadow: #4f9a6c;
+  --moss: #3f8660;
+  --lake: #3f83a8;
+  --cranberry: #b23a48;
+  --cranberry-deep: #9a2f3d;
+  --gold: #e8b64c;
+  --butter: #ffe9b0;
+  --snow: #ffffff;
+  --paper: #fbfdfb;
+  --ink: #17403f;
+  --ink-soft: #3d6663;
+  --font-display: "Mountains of Christmas", Georgia, "Times New Roman", serif;
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background-color: var(--sky-low);
+  background-image: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-low) 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 1.25rem 2rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+#snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.page { position: relative; z-index: 1; max-width: 62rem; margin: 0 auto; }
+
+.scene { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: 0 10px 24px rgba(23, 64, 63, 0.18); }
+header { display: grid; gap: 0.5rem; margin: 1.25rem 0 1.75rem; }
+.eyebrow { margin: 0; color: var(--cranberry-deep); font-weight: 800; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; }
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.7rem, 10vw, 4.8rem);
+  line-height: 1;
+  text-wrap: balance;
+  color: var(--ink);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+.status { margin: 0.25rem 0 0; color: var(--ink-soft); font-size: 1.05rem; max-width: 40rem; }
+.hint { margin: 0.25rem 0 0; min-height: 1.5em; color: var(--cranberry-deep); font-weight: 700; }
+
+.grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; max-width: 44rem; }
+@media (min-width: 720px) { .grid { gap: 16px; } }
+
+.door {
+  --box: var(--cranberry-deep);
+  --ribbon: var(--butter);
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--box);
+  color: var(--snow);
+  cursor: pointer;
+  overflow: hidden;
+  font-family: var(--font-display);
+  box-shadow: 0 6px 12px rgba(23, 64, 63, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+.door[data-tone="1"] { --box: var(--moss); --ribbon: #ffffff; }
+.door[data-tone="2"] { --box: var(--lake); --ribbon: var(--butter); }
+.door::before, .door::after { content: ""; position: absolute; background: var(--ribbon); opacity: 0.95; }
+.door::before { left: calc(50% - 5px); width: 10px; top: 0; bottom: 0; }
+.door::after { top: calc(50% - 5px); height: 10px; left: 0; right: 0; }
+.door:hover { transform: translateY(-3px); }
+.door:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.num { position: absolute; inset: 0; display: grid; place-items: center; z-index: 1; font-size: clamp(1.05rem, 4.6vw, 1.7rem); }
+.num span {
+  display: grid; place-items: center;
+  width: 2.3em; height: 2.3em; border-radius: 50%;
+  background: var(--box);
+  box-shadow: 0 0 0 3px var(--ribbon);
+  line-height: 1;
+}
+.sub { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; justify-content: center; z-index: 2; font-family: var(--font-body); }
+.sub span {
+  background: var(--box);
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.door.locked { filter: saturate(0.35); opacity: 0.72; }
+.door.locked:hover { transform: none; }
+.door.today { box-shadow: 0 0 0 3px var(--gold), 0 0 26px rgba(232, 182, 76, 0.7); animation: glow 2.4s ease-in-out infinite; }
+.door.shake { animation: shake 0.35s ease; }
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 3px var(--gold), 0 0 14px rgba(232, 182, 76, 0.45); }
+  50% { box-shadow: 0 0 0 3px var(--gold), 0 0 30px rgba(232, 182, 76, 0.85); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+footer { margin: 2rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center; color: var(--ink-soft); font-size: 0.9rem; }
+.link-btn { background: none; border: 0; padding: 0; color: var(--cranberry-deep); font: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.link-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  display: grid; place-items: center;
+  background: rgba(18, 53, 58, 0.62);
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.card {
+  width: min(34rem, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 16px;
+  border-top: 8px solid var(--moss);
+  padding: 1.25rem 1.5rem 1.25rem;
+  box-shadow: 0 20px 50px rgba(18, 53, 58, 0.45);
+  outline: none;
+}
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+.pill { background: var(--cranberry-deep); color: var(--snow); font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; }
+.card-num { color: var(--ink-soft); font-weight: 700; font-size: 0.9rem; }
+.card h2 { margin: 0 0 0.75rem; font-family: var(--font-display); font-size: clamp(1.8rem, 6vw, 2.3rem); line-height: 1.1; text-wrap: balance; }
+.card-body { margin: 0; font-size: 1.05rem; line-height: 1.65; white-space: pre-line; max-width: 65ch; }
+.bonus { margin-top: 1.25rem; padding-top: 1rem; border-top: 2px dashed rgba(23, 64, 63, 0.25); }
+.bonus-out { margin: 0.75rem 0 0; font-style: italic; line-height: 1.6; white-space: pre-line; }
+.btn { font: inherit; font-weight: 800; border: 0; border-radius: 10px; padding: 0.6rem 1rem; cursor: pointer; }
+.btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.btn.primary { background: var(--cranberry-deep); color: var(--snow); }
+.btn.primary:disabled { opacity: 0.6; cursor: default; }
+.btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px rgba(23, 64, 63, 0.3); }
+.card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; margin-top: 1.25rem; }
+
+.keepsakes { margin-top: 2.25rem; max-width: 44rem; }
+.keepsakes h2 { margin: 0 0 1.1rem; font-family: var(--font-display); font-size: clamp(1.7rem, 6vw, 2.3rem); line-height: 1.1; color: var(--ink); }
+.polaroids { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 3vw, 18px); align-items: start; }
+.polaroid {
+  position: relative;
+  margin: 0;
+  background: #ffffff;
+  padding: 8px 8px 32px;
+  border-radius: 4px;
+  box-shadow: 0 10px 22px rgba(23, 64, 63, 0.25);
+  transform: rotate(-2deg);
+}
+.polaroid:nth-child(2) { transform: rotate(1.8deg); margin-top: 14px; }
+.polaroid:nth-child(3) { transform: rotate(-1.2deg); margin-top: 6px; }
+.polaroid.no-cap { padding-bottom: 8px; }
+.polaroid::before {
+  content: "";
+  position: absolute; top: -10px; left: 50%;
+  width: 64px; height: 20px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(232, 182, 76, 0.6);
+}
+.polaroid img { display: block; width: 100%; height: auto; border-radius: 2px; }
+.polaroid figcaption { position: absolute; left: 0; right: 0; bottom: 7px; text-align: center; font-family: var(--font-display); font-size: clamp(0.85rem, 2.8vw, 1.1rem); color: var(--ink-soft); }
+
+.music-btn {
+  position: fixed; z-index: 10;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  font: inherit; font-weight: 800; font-size: 0.9rem;
+  border: 0; border-radius: 99px; padding: 0.6rem 1.1rem;
+  background: var(--cranberry-deep); color: var(--snow);
+  box-shadow: 0 6px 16px rgba(23, 64, 63, 0.35);
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.4;
+}
+.music-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .door, .door.today, .door.shake { animation: none; transition: none; }
+}
+</style>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<div class="page">
+  <svg class="scene" viewBox="0 0 800 240" role="img" aria-label="A snowy meadow valley with a little cottage, pine trees hung with lights, a stream and wildflowers">
+    <defs>
+      <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9fcfe4"/>
+        <stop offset="1" stop-color="#eaf5ee"/>
+      </linearGradient>
+      <g id="pine">
+        <rect x="-2.5" y="8" width="5" height="8" fill="#6b4a3a"/>
+        <path d="M0 -46 L15 -20 H7 L19 0 H8 L22 12 H-22 L-8 0 H-19 L-7 -20 H-15Z" fill="#2d7656"/>
+        <path d="M0 -46 L7 -33 Q0 -30 -7 -33Z" fill="#ffffff"/>
+        <path d="M-19 0 H-8 L-12 4 Q-15 2 -19 0Z" fill="#ffffff" opacity="0.9"/>
+        <circle cx="-6" cy="-14" r="2.2" fill="#e8b64c"/>
+        <circle cx="7" cy="-4" r="2.2" fill="#d8465a"/>
+        <circle cx="-10" cy="6" r="2.2" fill="#fff6d6"/>
+        <circle cx="12" cy="8" r="2.2" fill="#e8b64c"/>
+      </g>
+    </defs>
+    <rect width="800" height="240" fill="url(#sk)"/>
+    <circle cx="640" cy="60" r="26" fill="#fff6d6"/>
+    <circle cx="640" cy="60" r="38" fill="#fff6d6" opacity="0.35"/>
+    <path d="M0 150 C 90 105, 180 120, 270 140 C 360 160, 440 100, 540 112 C 640 124, 720 150, 800 128 L800 240 L0 240Z" fill="#b5dcc3"/>
+    <path d="M0 176 C 120 140, 230 150, 330 172 C 430 194, 520 150, 640 156 C 720 160, 770 176, 800 170 L800 240 L0 240Z" fill="#86c79c"/>
+    <path d="M560 240 C 575 212, 600 196, 640 186 C 680 176, 730 176, 800 182" stroke="#8ccbe6" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M575 236 C 590 214, 612 202, 645 193" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <g transform="translate(150 132)">
+      <circle cx="58" cy="-12" r="4" fill="#ffffff" opacity="0.85"/>
+      <circle cx="62" cy="-22" r="5" fill="#ffffff" opacity="0.7"/>
+      <circle cx="68" cy="-34" r="6" fill="#ffffff" opacity="0.55"/>
+      <rect x="0" y="22" width="64" height="40" rx="3" fill="#f7efe1"/>
+      <rect x="50" y="2" width="9" height="16" fill="#9a6b5a"/>
+      <path d="M-6 26 L32 0 L70 26Z" fill="#b23a48"/>
+      <path d="M2 21 L32 2 L62 21 Q32 14 2 21Z" fill="#ffffff"/>
+      <rect x="25" y="38" width="14" height="24" rx="2" fill="#7a4b3a"/>
+      <rect x="6" y="34" width="13" height="12" rx="1.5" fill="#ffd36b"/>
+      <rect x="45" y="34" width="13" height="12" rx="1.5" fill="#ffd36b"/>
+      <path d="M-4 62 Q32 56 68 62 L72 66 H-8Z" fill="#ffffff"/>
+    </g>
+    <path d="M0 206 C 140 176, 280 190, 400 204 C 520 218, 640 186, 800 200 L800 240 L0 240Z" fill="#5fae7c"/>
+    <path d="M0 226 C 160 208, 300 224, 440 220 C 580 216, 700 206, 800 218 L800 240 L0 240Z" fill="#f4faf7"/>
+    <use href="#pine" transform="translate(40 178) scale(1.25)"/>
+    <use href="#pine" transform="translate(88 190) scale(0.9)"/>
+    <use href="#pine" transform="translate(330 202) scale(0.8)"/>
+    <use href="#pine" transform="translate(500 206) scale(0.7)"/>
+    <use href="#pine" transform="translate(705 192) scale(1.3)"/>
+    <use href="#pine" transform="translate(752 204) scale(1)"/>
+    <g stroke="#3f8a5f" stroke-width="1.5" stroke-linecap="round">
+      <path d="M215 222 v-8 M233 224 v-9 M255 221 v-8 M410 222 v-8 M428 223 v-9 M585 218 v-8 M603 217 v-9 M625 215 v-8"/>
+    </g>
+    <g fill="#ffffff" stroke="#bfe0cb" stroke-width="1">
+      <circle cx="215" cy="212" r="3.5"/><circle cx="233" cy="213" r="3.5"/><circle cx="255" cy="211" r="3.5"/>
+      <circle cx="410" cy="212" r="3.5"/><circle cx="428" cy="212" r="3.5"/>
+      <circle cx="585" cy="208" r="3.5"/><circle cx="603" cy="207" r="3.5"/>
+    </g>
+    <g fill="#f3b6c4">
+      <circle cx="625" cy="205" r="3.5"/><circle cx="278" cy="214" r="3"/><circle cx="450" cy="214" r="3"/>
+    </g>
+    <g fill="#e8b64c">
+      <circle cx="215" cy="212" r="1.2"/><circle cx="233" cy="213" r="1.2"/><circle cx="255" cy="211" r="1.2"/>
+      <circle cx="410" cy="212" r="1.2"/><circle cx="428" cy="212" r="1.2"/>
+      <circle cx="585" cy="208" r="1.2"/><circle cx="603" cy="207" r="1.2"/>
+    </g>
+  </svg>
+
+  <header>
+    <p class="eyebrow" id="eyebrow">Christmas Calendar for my beautiful girlfriend Adele</p>
+    <h1>Ten Doors</h1>
+    <p class="status" id="status"></p>
+    <p class="hint" id="hint" aria-live="polite"></p>
+  </header>
+
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <section class="keepsakes" aria-labelledby="ksTitle">
+    <h2 id="ksTitle">Little keepsakes</h2>
+    <div class="polaroids">
+      <figure class="polaroid">
+        <img src="images/collage.jpg" width="669" height="666" alt="A photo collage set in a rose garden, with a tea table under a lace parasol, plush toys and two cut-out photos">
+        <figcaption>chudmaxxing</figcaption>
+      </figure>
+      <figure class="polaroid">
+        <img src="images/plush.jpg" width="720" height="960" alt="A black plush toy resting beside an open book on floral bedding">
+        <figcaption>Reading hour</figcaption>
+      </figure>
+      <figure class="polaroid no-cap">
+        <img src="images/night.jpg" width="540" height="960" alt="A black plush toy with big yellow eyes and a pink nose, photographed up close in dim light">
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <span id="rule"></span>
+    <button type="button" class="link-btn" id="previewBtn">Gift-giver preview: unlock every door</button>
+  </footer>
+
+  <svg class="scene" viewBox="0 0 800 90" role="img" aria-label="A strip of snowy meadow with wildflowers and pine trees">
+    <rect width="800" height="90" fill="#d8ecf0"/>
+    <path d="M0 50 C 120 24, 250 36, 380 48 C 520 62, 660 30, 800 44 L800 90 L0 90Z" fill="#86c79c"/>
+    <path d="M0 66 C 140 46, 300 62, 440 66 C 580 70, 700 52, 800 62 L800 90 L0 90Z" fill="#5fae7c"/>
+    <path d="M0 78 C 200 68, 360 80, 520 76 C 640 73, 730 70, 800 76 L800 90 L0 90Z" fill="#f4faf7"/>
+    <use href="#pine" transform="translate(70 58) scale(0.8)"/>
+    <use href="#pine" transform="translate(300 62) scale(0.6)"/>
+    <use href="#pine" transform="translate(560 60) scale(0.7)"/>
+    <use href="#pine" transform="translate(740 56) scale(0.85)"/>
+    <g stroke="#3f8a5f" stroke-width="1.5" stroke-linecap="round">
+      <path d="M150 78 v-8 M170 79 v-9 M380 78 v-8 M400 78 v-9 M450 77 v-8 M650 76 v-8 M670 77 v-9"/>
+    </g>
+    <g fill="#ffffff" stroke="#bfe0cb" stroke-width="1">
+      <circle cx="150" cy="69" r="3.5"/><circle cx="170" cy="69" r="3.5"/><circle cx="380" cy="69" r="3.5"/>
+      <circle cx="400" cy="68" r="3.5"/><circle cx="450" cy="68" r="3.5"/><circle cx="650" cy="67" r="3.5"/>
+    </g>
+    <g fill="#f3b6c4"><circle cx="670" cy="67" r="3.5"/><circle cx="230" cy="70" r="3"/></g>
+    <g fill="#e8b64c">
+      <circle cx="150" cy="69" r="1.2"/><circle cx="170" cy="69" r="1.2"/><circle cx="380" cy="69" r="1.2"/>
+      <circle cx="400" cy="68" r="1.2"/><circle cx="450" cy="68" r="1.2"/><circle cx="650" cy="67" r="1.2"/>
+    </g>
+  </svg>
+</div>
+
+<a class="music-btn" id="songLink" href="https://open.spotify.com/track/4fQVQKIiidREPI0MhFEuDn?si=4df8a34118cd46c9" target="_blank" rel="noopener">Play song</a>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="cardTitle" tabindex="-1" id="card">
+    <div class="card-top">
+      <span class="pill" id="cardType"></span>
+      <span class="card-num" id="cardNum"></span>
+    </div>
+    <h2 id="cardTitle"></h2>
+    <p class="card-body" id="cardBody"></p>
+    <div class="bonus" id="bonus" hidden>
+      <button type="button" class="btn primary" id="bonusBtn">Ask Santa for a bonus surprise</button>
+      <p class="bonus-out" id="bonusOut" hidden></p>
+    </div>
+    <div class="card-actions">
+      <button type="button" class="btn quiet" id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Change these lines to personalize everything.
+  var CONFIG = {
+    her: "Adele",               // her name, used throughout
+    you: "Koushik",             // your name
+    year: 2026,                 // the year the doors open
+    startDay: 16,               // December day that door 1 opens; door 10 then opens on Christmas Day
+    insideJokes: []             // e.g. ["the burnt toast incident", "our road trip playlist"]
+  };
+
+  // t = label on the card, s = short label on the door, nb = hide the bonus-surprise button
+  var DOORS = [
+    { t: "Letter", s: "Letter", h: "A Letter from Santa", x: "Dear {HER},\n\nI have checked my list twice, and your name is at the very top, written in gold ink.\n\nThe elves report a whole year of kindness, terrible puns tolerated, and at least a few moments of pure magic. I am pleased to make it official.\n\nOFFICIAL NICE LIST CERTIFICATE\nThis certifies that {HER} is a Gold-Level member of the Nice List for the entire year.\n\n{YOU} has hidden ten doors for you, one a day, all the way to Christmas. Open them in order and no peeking ahead.\n\nWith jingle bells and best wishes,\nS. Claus\n\nP.S. {YOU} asked me to pass along a message: no matter how many miles are between you, he is thinking of you every single day." },
+    { t: "Joke", s: "Joke", h: "Warm-up joke", x: "What do elves learn in school?\n\nThe elf-abet." },
+    { t: "Story", s: "Story", h: "The Elf Who Checked Twice", x: "At the North Pole there is one very small elf whose only job is to check the Nice List twice.\n\nEvery year he stops at the same name. He reads it three times, sighs happily, and underlines it.\n\nThe head elf finally asked why. \"Some names,\" said the elf, \"just feel like they're already wrapped.\"\n\nThe name was {HER}. The head elf nodded, wrote nothing down, and went to make hot chocolate." },
+    { t: "Joke", s: "Joke", h: "Breakfast at the North Pole", x: "What do snowmen eat for breakfast?\n\nFrosted flakes." },
+    { t: "Voice note", s: "Voice", nb: true, h: "A Voice Note from {YOU}", x: "Today's door is a voice note from {YOU}.\n\nIt is on its way to you, so check your messages and press play somewhere quiet. Headphones recommended." },
+    { t: "Story", s: "Story", h: "The Snowman Who Moved Indoors", x: "One year a very confident snowman moved into a living room. He lasted about eleven minutes.\n\nBut in those eleven minutes he wore a scarf, ate half a carrot, and had the best time of his life.\n\nThe moral: some things are worth doing even if they melt. Especially if someone is laughing nearby." },
+    { t: "Joke", s: "Joke", h: "Detective Santa", x: "What do you get when you cross Santa with a detective?\n\nSanta Clues." },
+    { t: "Story", s: "Story", h: "Two Penguins and a Tiny Tree", x: "Two penguins found a tree the size of a teacup.\n\nThey argued about where it should go, then agreed on the middle, right between them.\n\nThey hung one snowflake on it. It was the finest tree on the whole ice shelf." },
+    { t: "Joke", s: "Joke", h: "Santa's Garden", x: "Why does Santa have three gardens?\n\nSo he can ho, ho, ho." },
+    { t: "Gift", s: "Gift", nb: true, h: "Merry Christmas, {HER}", x: "Your last door is a Robux gift from {YOU}.\n\nMerry Christmas, {HER}. Check your messages today for the details." }
+  ];
+
+  function fill(s) {
+    return s.split("{HER}").join(CONFIG.her).split("{YOU}").join(CONFIG.you);
+  }
+
+  function openDate(n) { return new Date(CONFIG.year, 11, CONFIG.startDay + n - 1); }
+  function dayLabel(n) { return "Dec " + (CONFIG.startDay + n - 1); }
+
+  var seen = new Set();
+  try { JSON.parse(localStorage.getItem("fd-seen-10") || "[]").forEach(function (n) { seen.add(n); }); } catch (e) {}
+  function saveSeen() { try { localStorage.setItem("fd-seen-10", JSON.stringify(Array.from(seen))); } catch (e) {} }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var grid = $("grid"), hint = $("hint"), overlay = $("overlay"), card = $("card");
+  var current = 0, sampleFn = null, busy = false, renderedDay = "";
+
+  function isPreview() { return location.hash === "#preview"; }
+
+  function statusLine(now) {
+    if (isPreview()) return "Preview mode: every door is unlocked so you can look around.";
+    var first = openDate(1), last = openDate(DOORS.length);
+    if (now < first) {
+      var d = Math.ceil((first - now) / 864e5);
+      return "The first door opens on December " + CONFIG.startDay + ". " + d + (d === 1 ? " day" : " days") + " to go.";
+    }
+    if (now >= last) return "Merry Christmas, " + CONFIG.her + ". Every door is open.";
+    var k = now.getDate() - CONFIG.startDay + 1;
+    var left = Math.ceil((last - now) / 864e5);
+    return "Door " + k + " is open today. " + left + (left === 1 ? " day" : " days") + " until Christmas.";
+  }
+
+  function render() {
+    var now = new Date(), preview = isPreview();
+    renderedDay = now.toDateString() + preview;
+    $("eyebrow").textContent = "Christmas Calendar for my beautiful girlfriend Adele";
+    $("status").textContent = statusLine(now);
+    $("rule").textContent = "One door opens each day from December " + CONFIG.startDay + " until Christmas Day.";
+    var todayN = 0;
+    if (now.getFullYear() === CONFIG.year && now.getMonth() === 11) {
+      var k = now.getDate() - CONFIG.startDay + 1;
+      if (k >= 1 && k <= DOORS.length) todayN = k;
+    }
+    $("previewBtn").textContent = preview ? "Leave preview" : "Gift-giver preview: unlock every door";
+    grid.textContent = "";
+    DOORS.forEach(function (d, i) {
+      var n = i + 1;
+      var open = preview || now >= openDate(n);
+      var isSeen = open && seen.has(n);
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "door" + (open ? "" : " locked") + (n === todayN && !preview ? " today" : "");
+      b.dataset.tone = String(i % 3);
+      b.dataset.n = String(n);
+      b.setAttribute("aria-label", "Door " + n + (open ? (isSeen ? ", opened" : ", ready to open") : ", opens December " + (CONFIG.startDay + n - 1)));
+      var num = document.createElement("div");
+      num.className = "num";
+      var ns = document.createElement("span");
+      ns.textContent = String(n);
+      num.appendChild(ns);
+      var sub = document.createElement("div");
+      sub.className = "sub";
+      var ss = document.createElement("span");
+      ss.textContent = open ? (isSeen ? d.s : "Open") : dayLabel(n);
+      sub.appendChild(ss);
+      b.appendChild(num);
+      b.appendChild(sub);
+      b.addEventListener("click", function () {
+        if (open) { reveal(n); return; }
+        hint.textContent = "Door " + n + " opens on December " + (CONFIG.startDay + n - 1) + " 👀👀👀 wait up sugar";
+        b.classList.remove("shake");
+        void b.offsetWidth;
+        b.classList.add("shake");
+      });
+      grid.appendChild(b);
+    });
+  }
+
+  function reveal(n) {
+    var d = DOORS[n - 1];
+    current = n;
+    $("cardType").textContent = d.t;
+    $("cardNum").textContent = "Door " + n + " of " + DOORS.length;
+    $("cardTitle").textContent = fill(d.h);
+    $("cardBody").textContent = fill(d.x);
+    $("bonusOut").textContent = "";
+    $("bonusOut").hidden = true;
+    $("bonus").hidden = !sampleFn || !!d.nb;
+    $("bonusBtn").disabled = false;
+    $("bonusBtn").textContent = "Ask Santa for a bonus surprise";
+    hint.textContent = "";
+    overlay.hidden = false;
+    card.scrollTop = 0;
+    card.focus();
+    seen.add(n);
+    saveSeen();
+  }
+
+  function closeCard() {
+    if (overlay.hidden) return;
+    overlay.hidden = true;
+    render();
+    var b = grid.querySelector('[data-n="' + current + '"]');
+    if (b) b.focus();
+  }
+
+  $("closeBtn").addEventListener("click", closeCard);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) closeCard(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCard(); });
+
+  $("previewBtn").addEventListener("click", function () {
+    location.hash = isPreview() ? "" : "preview";
+  });
+  window.addEventListener("hashchange", render);
+
+  // Optional live AI surprise. Appears only when the viewer can ask Claude.
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(function (s) { sampleFn = s || null; }).catch(function () {});
+  }
+
+  $("bonusBtn").addEventListener("click", async function () {
+    if (!sampleFn || busy) return;
+    var d = DOORS[current - 1];
+    var btn = $("bonusBtn"), out = $("bonusOut");
+    busy = true;
+    btn.disabled = true;
+    out.hidden = false;
+    out.textContent = "The elves are writing…";
+    var extra = CONFIG.insideJokes.length ? " If it fits naturally, you may nod to one of these shared jokes: " + CONFIG.insideJokes.join("; ") + "." : "";
+    var prompt = "You are the head elf at the North Pole, writing a tiny surprise for " + CONFIG.her +
+      ", from " + CONFIG.you + ". They are in a long-distance relationship, so when it fits, lean into missing each other and being together in spirit. " +
+      "It goes inside door " + current + " of a ten-door Christmas calendar. " +
+      "The door's theme is: " + d.t + " (" + fill(d.h) + "). Write 2 to 4 warm, playful sentences in plain text. " +
+      "No markdown, no emoji, no preamble. Make it fresh and specific, and do not repeat this existing text: " + fill(d.x) + extra;
+    try {
+      var r = await sampleFn(prompt, { cache: false, onText: function (e) { out.textContent = e.text; } });
+      if (r && r.text) out.textContent = r.text.trim();
+      btn.textContent = "Another one";
+    } catch (err) {
+      if (err && err.code === "not_granted") {
+        $("bonus").hidden = true;
+        sampleFn = null;
+      } else {
+        out.textContent = "The elves are busy right now. Try again in a minute.";
+      }
+    } finally {
+      busy = false;
+      btn.disabled = false;
+    }
+  });
+
+  // Snow
+  var cv = $("snow"), cx = cv.getContext("2d"), flakes = [], W = 0, H = 0;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function sizeSnow() {
+    var r = window.devicePixelRatio || 1;
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * r; cv.height = H * r;
+    cx.setTransform(r, 0, 0, r, 0, 0);
+    flakes = [];
+    var count = Math.round(Math.min(90, (W * H) / 14000));
+    for (var i = 0; i < count; i++) {
+      flakes.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 2.2, v: 0.3 + Math.random() * 0.8, d: Math.random() * 6.28, s: 0.3 + Math.random() * 0.6 });
+    }
+    if (reduce) drawSnow();
+  }
+  function drawSnow() {
+    cx.clearRect(0, 0, W, H);
+    cx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    cx.shadowColor = "rgba(70, 130, 160, 0.45)";
+    cx.shadowBlur = 3;
+    for (var i = 0; i < flakes.length; i++) {
+      var f = flakes[i];
+      if (!reduce) {
+        f.y += f.v; f.d += 0.01; f.x += Math.sin(f.d) * f.s;
+        if (f.y > H + 4) { f.y = -4; f.x = Math.random() * W; }
+      }
+      cx.beginPath();
+      cx.arc(f.x, f.y, f.r, 0, 6.283);
+      cx.fill();
+    }
+    if (!reduce) requestAnimationFrame(drawSnow);
+  }
+  window.addEventListener("resize", sizeSnow);
+  sizeSnow();
+  if (!reduce) requestAnimationFrame(drawSnow);
+
+  render();
+  setInterval(function () {
+    if (overlay.hidden && renderedDay !== new Date().toDateString() + isPreview()) render();
+  }, 60000);
+})();
+</script>
+
+</body></html>
